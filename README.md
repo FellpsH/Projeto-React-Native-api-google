@@ -9,3 +9,6 @@ Projeto "Coordenadas"
 O projeto "Coordenadas" é a versão mais avançada, mas ainda não finalizada do trabalho. Utiliza o React Native Maps em conjunto com a API do Google para traçar uma rota com base nos dados contidos no arquivo "frontend_data_gps.json".
 Neste projeto, o marcador (Marker o carro) segue a rota corretamente, porém a animação ainda não está funcionando completamente.
 Além disso, vou colocar mais comentários e refatoração para torná-lo mais legível e compreensível.
+
+
+OPS: para usar a api do google voce precisa ter uma chave
