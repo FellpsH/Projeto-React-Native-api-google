@@ -267,7 +267,7 @@ const Mapa = () => {
                         waypoints={coords.slice(1, -1)}
                         strokeWidth={3}
                         strokeColor="red"
-                        apikey={"AIzaSyCjK1Gqd7AmsSBSrJFi4CbIHKevVU-yqpQ"}
+                        apikey={"Coloca aqui sua chave da api do google!!"}
                         onReady={handleRouteReady}
                     />
                 )}
