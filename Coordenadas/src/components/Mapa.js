@@ -1,67 +1,41 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, View, Image, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
-import { requestForegroundPermissionsAsync, getCurrentPositionAsync, LocationObject, watchPositionAsync, LocationAccuracy } from 'expo-location';
+import { Image, Text } from 'react-native-elements';
+import Icon from 'react-native-vector-icons/FontAwesome';
+
 
 const Mapa = () => {
     const [coords, setCoords] = useState([]);
     const [bussola, setbussola] = useState(0);
     const [routeData, setRouteData] = useState([]);
     const [isPlaying, setIsPlaying] = useState(false);
+    const [mapType, setMapType] = useState('standard');
     const [speedCar, setSpeedCar] = useState(0); // Estado para controlar a velocidade do marcador 3
     const [spriteSpeed, setSpriteSpeed] = useState(10); // Estado para controlar a velocidade do marcador 3
     const [selectedCourseIndex, setSelectedCourseIndex] = useState(0); // Estado para armazenar qual coordenadas o usuario quer 
-    
     const [currentPositionIndex, setCurrentPositionIndex] = useState(0);
     const spriteImage = require('../../assets/vehicles.png');
-    const mapRef = useRef(null); 
+    const mapRef = useRef(null);
+    let rosadosventos = -380
 
-    async function requestLocationPermissions() { // Pedir permissao de localizaçao GPS para o usuario
-        const { granted } = await requestForegroundPermissionsAsync();
-        if (granted) {
-            const currentPosition = await getCurrentPositionAsync();
-            setLocation(currentPosition);
-        }
-    }
+    const handleRouteReady = (result) => {
+        setRouteData(result); // Armazenar os dados da rota no estado
+    };
+
+    const handleCourseSelection = (index) => {
+        setSelectedCourseIndex(index); // Atualiza o estado com o índice do curso selecionado
+    };
+
+    const toggleMapType = () => {
+        setMapType(mapType === 'standard' ? 'satellite' : 'standard');
+    };
+
     const startMovement = async () => {
         if (selectedCourseIndex !== null) {
             setIsPlaying(true);
             setCurrentPositionIndex(0);
-            await watchPositionAsync({
-                accuracy: LocationAccuracy.Highest,
-                timeInterval: 1000,
-                distanceInterval: 1
-            }, (response) => {
-                const { coords } = response;
-                const angle = coords.heading !== null ? coords.heading : 0;
-                let point = '';
-                if (angle >= -15 && angle < 15) {
-                    setbussola(-380);
-                    point = 'norte';
-                } else if (angle >= 15 && angle < 75) {
-                    setbussola(-510);
-                    point = 'nordeste';
-                } else if (angle >= 75 && angle < 105) {
-                    setbussola(-640);
-                    point = 'leste';
-                } else if (angle >= 105 && angle < 165) {
-                    setbussola(-760);
-                    point = 'sudeste';
-                } else if (angle >= 165 && angle < 195) {
-                    setbussola(-880);
-                    point = 'sul';
-                } else if (angle >= 255 && angle < 285) {
-                    setbussola(-140);
-                    point = 'oeste';
-                } else if (angle >= 285 && angle < 345) {
-                    setbussola(-260);
-                    point = 'noroeste';
-                } else {
-                    setbussola(-380);
-                    point = 'norte';
-                }
-            });
             const data = require('./frontend_data_gps.json');
             const course = data.courses[selectedCourseIndex];
             const { gps } = course;
@@ -72,7 +46,11 @@ const Mapa = () => {
             };
             const seedCarArray = gps.map(coord => ({
                 speed: coord.speed,
+                direction: coord.direction,
             }));
+
+            console.table(seedCarArray)
+
             setSpeedCar(seedCarArray)
             const lastGPS = gps[gps.length - 1];
             const lastCoordinates = {
@@ -90,115 +68,68 @@ const Mapa = () => {
         }
     };
 
+    function watchPosition(direction) {
+        let point = '';
+        if (direction >= -15 && direction < 15) {
+            rosadosventos = -380;
+            point = 'norte';
+        } else if (direction >= 15 && direction < 75) {
+            rosadosventos = -510;
+            point = 'nordeste';
+        } else if (direction >= 75 && direction < 105) {
+            rosadosventos = -640;
+            point = 'leste';
+        } else if (direction >= 105 && direction < 165) {
+            rosadosventos = -760;
+            point = 'sudeste';
+        } else if (direction >= 165 && direction < 195) {
+            rosadosventos = -880;
+            point = 'sul';
+        } else if (direction >= 255 && direction < 285) {
+            rosadosventos = -140;
+            point = 'oeste';
+        } else if (direction >= 285 && direction < 345) {
+            rosadosventos = -260;
+            point = 'noroeste';
+        } else {
+            rosadosventos = -380;
+            point = 'norte';
+        }
+        setbussola(rosadosventos)
+        console.log("direction: " + direction + point + ": " + rosadosventos);
 
-    // useEffect(() => {
-    //     requestLocationPermissions();
-    //     watchPositionAsync({
-    //         accuracy: LocationAccuracy.Highest,
-    //         timeInterval: 1000,
-    //         distanceInterval: 1
-    //     }, (response) => {
-    //         const { coords } = response;
-    //         // Calcular a direção do movimento
-    //         //console.log(coords)
-    //         const angle = coords.heading !== null ? coords.heading : 0;
-    //         // console.log("angle: " + angle)
-    //         // Calcular a direção do movimento
-    //         let point = '';
-    //         if (angle >= -15 && angle < 15) {
-    //             setbussola(-380);
-    //             point = 'norte';
-    //         } else if (angle >= 15 && angle < 75) {
-    //             setbussola(-510);
-    //             point = 'nordeste';
-    //         } else if (angle >= 75 && angle < 105) {
-    //             setbussola(-640);
-    //             point = 'leste';
-    //         } else if (angle >= 105 && angle < 165) {
-    //             setbussola(-760);
-    //             point = 'sudeste';
-    //         } else if (angle >= 165 && angle < 195) {
-    //             setbussola(-880);
-    //             point = 'sul';
-    //         } else if (angle >= 255 && angle < 285) {
-    //             setbussola(-140);
-    //             point = 'oeste';
-    //         } else if (angle >= 285 && angle < 345) {
-    //             setbussola(-260);
-    //             point = 'noroeste';
-    //         } else {
-    //             setbussola(-380);
-    //             point = 'norte';
-    //         }
-    //         //console.log(point);
-    //         //console.log(bussola);
-    //     });
-    // }, []);
+    }
 
     useEffect(() => {
-        const fetchCoords = async () => {
-            try {
-                const data = require('./frontend_data_gps.json');
-                const course = data.courses[selectedCourseIndex];
-                const { gps } = course;
-                console.log(selectedCourseIndex)
-                // Coordenadas do primeiro objeto
-                const firstGPS = gps[0];
-                const firstCoordinates = {
-                    latitude: firstGPS.latitude,
-                    longitude: firstGPS.longitude,
-                };
-
-                const seedCarArray = gps.map(coord => ({
-                    speed: coord.speed, // Adicionar a velocidade à coordenada
-                }));
-                setSpeedCar(seedCarArray)
-
-                // Coordenadas do último objeto
-                const lastGPS = gps[gps.length - 1];
-                const lastCoordinates = {
-                    latitude: lastGPS.latitude,
-                    longitude: lastGPS.longitude
-                };
-
-                // Criar um array com as coordenadas do primeiro e último objeto
-                const formattedCoordinates = [firstCoordinates, lastCoordinates];
-
-                setCoords(formattedCoordinates); // Definir os dados do estado com o novo array de coordenadas
-            } catch (error) {
-                console.error('Erro ao carregar as coordenadas:', error);
-            }
-        };
-
-        fetchCoords();
-    }, []);
-
-
-
-    useEffect(() => {
-        let timer; // Declare a variável do timer aqui
-        
+        let timer; 
+        let newAnimetSpeed
         if (routeData && routeData.coordinates && routeData.coordinates.length > 0 && isPlaying) {
-            let index = 0; // Inicializa o índice da posição atual
-    
+            let index = 0;
             const moveMarker = () => {
                 let realTimeSpeedCar = 0; // Inicialize com 0
-    
+                let direction = 0; // Inicialize a direção com 0
                 if (speedCar[index] && speedCar[index].speed !== undefined && speedCar[index].speed !== null && speedCar[index].speed !== 0) {
                     realTimeSpeedCar = speedCar[index].speed;
+                    direction = speedCar[index].direction;
                 } else {
-                    // Gerar um novo número aleatório entre 40 e 100 a cada vez que não houver velocidade definida
+                    // Gerar um novo número aleatório entre 70 e 100 a cada vez que não houver velocidade definida
                     realTimeSpeedCar = Math.floor(Math.random() * (70 - 10 + 1)) + 10;
+                    direction = 0;
                 }
-    
+
                 // Recalcular newAnimetSpeed com base no realTimeSpeedCar
-                const newAnimetSpeed = 1000 - realTimeSpeedCar * 10;
+                newAnimetSpeed = 1000 - realTimeSpeedCar * 10;
                 setSpriteSpeed(parseFloat(realTimeSpeedCar).toFixed(2))
-                console.log("realTimeSpeedCar FELLIPE:", realTimeSpeedCar, "animetSpeed:", newAnimetSpeed);
-    
-                // Avança para a próxima posição
+
+                if (direction !== undefined) {
+                    rosadosventos = direction;
+                    watchPosition(direction);
+                } else {
+                    console.error('Direção não definida');
+                }
+             
                 index++;
-    
+
                 // Atualiza a posição do marcador apenas se não tiver atingido o final da rota
                 if (index < routeData.coordinates.length) {
                     setCurrentPositionIndex(index);
@@ -207,17 +138,17 @@ const Mapa = () => {
                     clearInterval(timer);
                 }
             };
-    
+
             // Chama moveMarker imediatamente para iniciar o movimento
             moveMarker();
-    
-            // Configura o timer para chamar moveMarker com base no novo intervalo a cada iteração
-            timer = setInterval(moveMarker, 1000);
+
+           
+            timer = setInterval(moveMarker, newAnimetSpeed); // Configura a  velociadade do carro com o valor que esta atribuido a  newAnimetSpeed
         }
-    
-        return () => clearInterval(timer); // Limpeza do timer no desmontagem do componente
+
+        return () => clearInterval(timer);
     }, [routeData, isPlaying, speedCar]);
-    
+
 
     useEffect(() => {
         if (routeData && routeData.coordinates && routeData.coordinates.length > 0) {
@@ -233,13 +164,7 @@ const Mapa = () => {
         }
     }, [currentPositionIndex, routeData]);
 
-    const handleRouteReady = (result) => {
-        setRouteData(result); // Armazenar os dados da rota no estado
-    };
 
-    const handleCourseSelection = (index) => {
-        setSelectedCourseIndex(index); // Atualiza o estado com o índice do curso selecionado
-    };
 
     return (
         <View style={styles.container}>
@@ -252,6 +177,12 @@ const Mapa = () => {
                     latitudeDelta: 0.0922,
                     longitudeDelta: 0.0421,
                 }}
+                camera={{
+                    heading: 300,
+                    pitch: 0,
+                    zoom: 15,
+                }}
+                mapType={mapType}
             >
                 {coords.map((coord, index) => (
                     <Marker
@@ -267,7 +198,7 @@ const Mapa = () => {
                         waypoints={coords.slice(1, -1)}
                         strokeWidth={3}
                         strokeColor="red"
-                        apikey={"Coloca aqui sua chave da api do google!!"}
+                        apikey={"AIzaSyCgZA5_i94ghWjvjqlzAxNerRaRiPpR2yc"}
                         onReady={handleRouteReady}
                     />
                 )}
@@ -282,11 +213,19 @@ const Mapa = () => {
                     </Marker.Animated>
                 )}
             </MapView>
-            <TouchableOpacity style={styles.button} onPress={startMovement}>
-                <Text style={styles.buttonText}>PLAY</Text>
-            </TouchableOpacity>
-            <View style={styles.speedControls}>
-                <Text style={styles.speedValue}>{spriteSpeed} KM/h</Text>  
+            <View style={styles.controlsContainer}>
+                <TouchableOpacity style={styles.button} onPress={startMovement}>
+                    <Icon name="play" size={30} color="#fff" />
+                </TouchableOpacity>
+                <View style={styles.speedControls}>
+                    <Text style={styles.speedValue}>{spriteSpeed}</Text>
+                    <Text style={styles.speedUnit}>KM/h</Text>
+                </View>
+                <TouchableOpacity style={styles.toggleButton} onPress={toggleMapType}>
+                    <Text style={styles.toggleButtonText}>
+                        {mapType === 'standard' ? 'Satélite' : 'Mapa'}
+                    </Text>
+                </TouchableOpacity>
             </View>
             <View style={styles.courseSelection}>
                 {[0, 1, 2, 3, 4].map((index) => (
@@ -299,6 +238,7 @@ const Mapa = () => {
                     </TouchableOpacity>
                 ))}
             </View>
+
         </View>
     );
 };
@@ -306,61 +246,83 @@ const Mapa = () => {
 const styles = StyleSheet.create({
     container: {
         ...StyleSheet.absoluteFillObject,
-        justifyContent: 'flex-end',
-        alignItems: 'center',
+        justifyContent: 'space-between',
+        flexDirection: 'column', 
+        paddingTop: 20, 
     },
     map: {
         ...StyleSheet.absoluteFillObject,
+        flex: 1,
     },
     sprite: {
-        width: 60, // Largura da imagem
-        height: 60, // Altura da imagem
+        width: 60,
+        height: 60,
+    },
+    controlsContainer: {
+        flexDirection: 'column', 
+        justifyContent: 'center',
+        alignItems: 'flex-start',
+        marginLeft: 20, 
+        marginTop: 400, 
+        justifyContent: 'center'
     },
     button: {
-        backgroundColor: 'blue',
-        padding: 10,
-        borderRadius: 5,
-        marginTop: 10,
+        backgroundColor: '#007bff',
+        padding: 15,
+        borderRadius: 20,
+        marginBottom: 10, 
     },
     buttonText: {
         color: 'white',
-        fontSize: 16,
+        fontSize: 18,
         fontWeight: 'bold',
     },
     speedControls: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: 10,
-    },
-    speedButton: {
-        backgroundColor: 'blue',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#ccc',
+        borderRadius: 10,
         padding: 10,
-        borderRadius: 5,
-        marginLeft: 10,
     },
-    speedButtonText: {
-        color: 'white',
-        fontSize: 16,
+    speedValue: {
+        fontSize: 20,
         fontWeight: 'bold',
     },
+    speedUnit: {
+        fontSize: 16,
+        color: 'gray',
+        marginLeft: 5, 
+    },
     courseSelection: {
-        flexDirection: 'row',
-        marginTop: 10,
+        flexDirection: 'column', 
+        justifyContent: 'center',
+        alignItems: 'flex-end', 
+        marginRight: 20, 
     },
     courseButton: {
-        backgroundColor: 'lightgray',
+        backgroundColor: '#f0f0f0',
         paddingVertical: 10,
         paddingHorizontal: 20,
         borderRadius: 5,
-        marginRight: 10,
+        marginBottom: 10, 
     },
     selectedCourseButton: {
-        backgroundColor: 'blue',
+        backgroundColor: '#007bff',
     },
     courseButtonText: {
         color: 'black',
         fontSize: 16,
     },
+    toggleButton: {
+       
+        marginTop:10,
+        backgroundColor: '#007bff',
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 10,
+    },
 });
+
 
 export default Mapa;
