@@ -1,0 +1,12 @@
+{
+  "common": {
+    "changeLanguage": "Cambiar Idioma",
+    "speedUnit": "KM/h",
+    "mapTypeToggle": {
+      "standard": "Mapa Estándar",
+      "satellite": "Mapa Satelital"
+    },
+    "course": "Curso",
+    "destinationReached":"Has llegado a tu destino"
+  }
+}

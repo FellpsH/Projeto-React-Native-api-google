@@ -1,0 +1,13 @@
+{
+    "common": {
+      "play": "Play",
+      "speedUnit": "KM/h",
+      "mapTypeToggle": {
+        "standard": "Satélite",
+        "satellite": "Mapa"
+      },
+      "changeLanguage": "Alterar Idioma",
+      "course": "Trajeto",
+      "destinationReached":"Você chegou no seu destino"
+    }
+  }

@@ -4,7 +4,8 @@ import MapView, { Marker } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
 import { Image, Text } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
-
+import { useTranslation } from 'react-i18next';
+import i18n from '../languages/ii8n.js';
 
 const Mapa = () => {
     const [coords, setCoords] = useState([]);
@@ -16,8 +17,12 @@ const Mapa = () => {
     const [spriteSpeed, setSpriteSpeed] = useState(10); // Estado para controlar a velocidade do marcador 3
     const [selectedCourseIndex, setSelectedCourseIndex] = useState(0); // Estado para armazenar qual coordenadas o usuario quer 
     const [currentPositionIndex, setCurrentPositionIndex] = useState(0);
+    const [currentLanguage, setCurrentLanguage] = useState(i18n.language);
+    const [showDestinationMessage, setShowDestinationMessage] = useState(false); 
     const spriteImage = require('../../assets/vehicles.png');
     const mapRef = useRef(null);
+
+    const { t } = useTranslation();
     let rosadosventos = -380
 
     const handleRouteReady = (result) => {
@@ -33,6 +38,7 @@ const Mapa = () => {
     };
 
     const startMovement = async () => {
+        setShowDestinationMessage(false);
         if (selectedCourseIndex !== null) {
             setIsPlaying(true);
             setCurrentPositionIndex(0);
@@ -68,6 +74,26 @@ const Mapa = () => {
         }
     };
 
+    const changeLanguage = () => {
+        let newLanguage = '';
+        switch (currentLanguage) {
+            case 'pt':
+                newLanguage = 'en';
+                break;
+            case 'en':
+                newLanguage = 'es';
+                break;
+            case 'es':
+                newLanguage = 'pt';
+                break;
+            default:
+                newLanguage = 'pt';
+        }
+
+        i18n.changeLanguage(newLanguage);
+        setCurrentLanguage(newLanguage);
+    };
+
     function watchPosition(direction) {
         let point = '';
         if (direction >= -15 && direction < 15) {
@@ -101,7 +127,7 @@ const Mapa = () => {
     }
 
     useEffect(() => {
-        let timer; 
+        let timer;
         let newAnimetSpeed
         if (routeData && routeData.coordinates && routeData.coordinates.length > 0 && isPlaying) {
             let index = 0;
@@ -127,7 +153,7 @@ const Mapa = () => {
                 } else {
                     console.error('Direção não definida');
                 }
-             
+
                 index++;
 
                 // Atualiza a posição do marcador apenas se não tiver atingido o final da rota
@@ -136,15 +162,22 @@ const Mapa = () => {
                 } else {
                     // Se chegarmos ao final da rota, limpe o timer
                     clearInterval(timer);
+                    setShowDestinationMessage(true);
                 }
+
+   
             };
 
             // Chama moveMarker imediatamente para iniciar o movimento
             moveMarker();
 
-           
+
+
             timer = setInterval(moveMarker, newAnimetSpeed); // Configura a  velociadade do carro com o valor que esta atribuido a  newAnimetSpeed
         }
+
+
+        
 
         return () => clearInterval(timer);
     }, [routeData, isPlaying, speedCar]);
@@ -163,7 +196,6 @@ const Mapa = () => {
             }
         }
     }, [currentPositionIndex, routeData]);
-
 
 
     return (
@@ -213,20 +245,31 @@ const Mapa = () => {
                     </Marker.Animated>
                 )}
             </MapView>
+            {showDestinationMessage && (
+                    <View style={styles.destinationMessageContainer}>
+                        <Text style={styles.destinationMessage}>{t('common.destinationReached')}</Text>
+                    </View>
+                )}
             <View style={styles.controlsContainer}>
                 <TouchableOpacity style={styles.button} onPress={startMovement}>
                     <Icon name="play" size={30} color="#fff" />
                 </TouchableOpacity>
                 <View style={styles.speedControls}>
                     <Text style={styles.speedValue}>{spriteSpeed}</Text>
-                    <Text style={styles.speedUnit}>KM/h</Text>
+                    <Text style={styles.speedUnit}>{t('common.speedUnit')}</Text>
                 </View>
                 <TouchableOpacity style={styles.toggleButton} onPress={toggleMapType}>
                     <Text style={styles.toggleButtonText}>
-                        {mapType === 'standard' ? 'Satélite' : 'Mapa'}
+                        {t(`common.mapTypeToggle.${mapType}`)}
                     </Text>
                 </TouchableOpacity>
+                <TouchableOpacity style={styles.languageButton} onPress={changeLanguage}>
+                    <Text style={styles.languageButtonText}>{t('common.changeLanguage')}</Text>
+                </TouchableOpacity>
+
+                
             </View>
+
             <View style={styles.courseSelection}>
                 {[0, 1, 2, 3, 4].map((index) => (
                     <TouchableOpacity
@@ -234,7 +277,7 @@ const Mapa = () => {
                         style={[styles.courseButton, selectedCourseIndex === index ? styles.selectedCourseButton : null]}
                         onPress={() => handleCourseSelection(index)}
                     >
-                        <Text style={styles.courseButtonText}>Trajeto  {index + 1}</Text>
+                        <Text style={styles.courseButtonText}>{t('common.course')}  {index + 1}</Text>
                     </TouchableOpacity>
                 ))}
             </View>
@@ -247,8 +290,8 @@ const styles = StyleSheet.create({
     container: {
         ...StyleSheet.absoluteFillObject,
         justifyContent: 'space-between',
-        flexDirection: 'column', 
-        paddingTop: 20, 
+        flexDirection: 'column',
+        paddingTop: 20,
     },
     map: {
         ...StyleSheet.absoluteFillObject,
@@ -259,18 +302,18 @@ const styles = StyleSheet.create({
         height: 60,
     },
     controlsContainer: {
-        flexDirection: 'column', 
+        flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'flex-start',
-        marginLeft: 20, 
-        marginTop: 400, 
+        marginLeft: 20,
+        marginTop: 300,
         justifyContent: 'center'
     },
     button: {
         backgroundColor: '#007bff',
         padding: 15,
         borderRadius: 20,
-        marginBottom: 10, 
+        marginBottom: 10,
     },
     buttonText: {
         color: 'white',
@@ -292,20 +335,20 @@ const styles = StyleSheet.create({
     speedUnit: {
         fontSize: 16,
         color: 'gray',
-        marginLeft: 5, 
+        marginLeft: 5,
     },
     courseSelection: {
-        flexDirection: 'column', 
+        flexDirection: 'column',
         justifyContent: 'center',
-        alignItems: 'flex-end', 
-        marginRight: 20, 
+        alignItems: 'flex-end',
+        marginRight: 20,
     },
     courseButton: {
         backgroundColor: '#f0f0f0',
         paddingVertical: 10,
         paddingHorizontal: 20,
         borderRadius: 5,
-        marginBottom: 10, 
+        marginBottom: 10,
     },
     selectedCourseButton: {
         backgroundColor: '#007bff',
@@ -315,12 +358,42 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     toggleButton: {
-       
-        marginTop:10,
+
+        marginTop: 10,
         backgroundColor: '#007bff',
         paddingVertical: 10,
         paddingHorizontal: 20,
         borderRadius: 10,
+    },
+    languageButton: {
+        backgroundColor: '#007bff',
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 10,
+        marginTop: 10,
+    },
+    languageButtonText: {
+        color: 'white',
+        fontSize: 16,
+    },
+    destinationMessageContainer: {
+        position: 'absolute',
+        top: 50,
+        left: 10,
+        right: 10,
+        backgroundColor: '#fff',
+        padding: 10,
+        borderRadius: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
+        height:40,
+        marginEnd:10,
+        width:"auto"
+    },
+    destinationMessage: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#333',
     },
 });
 

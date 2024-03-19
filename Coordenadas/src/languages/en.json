@@ -1,0 +1,13 @@
+{
+    "common": {
+      "play": "Play",
+      "speedUnit": "MI/h",
+      "mapTypeToggle": {
+        "standard": "Satellite",
+        "satellite": "Map"
+      },
+      "changeLanguage": "Change Language",
+      "course": "Route",
+      "destinationReached":"You have reached your destination"
+    }
+  }
