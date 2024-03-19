@@ -1,42 +1,45 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, View, TouchableOpacity } from 'react-native';
+import {  View, TouchableOpacity } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
 import { Image, Text } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useTranslation } from 'react-i18next';
-import i18n from '../languages/ii8n.js';
+import i18n from '../../languages/ii8n.js';
+import { styles } from './mapaStyles'; // Importe os estilos do arquivo separado
 
 const Mapa = () => {
-    const [coords, setCoords] = useState([]);
-    const [bussola, setbussola] = useState(0);
-    const [routeData, setRouteData] = useState([]);
-    const [isPlaying, setIsPlaying] = useState(false);
-    const [mapType, setMapType] = useState('standard');
-    const [speedCar, setSpeedCar] = useState(0); // Estado para controlar a velocidade do marcador 3
-    const [spriteSpeed, setSpriteSpeed] = useState(10); // Estado para controlar a velocidade do marcador 3
-    const [selectedCourseIndex, setSelectedCourseIndex] = useState(0); // Estado para armazenar qual coordenadas o usuario quer 
-    const [currentPositionIndex, setCurrentPositionIndex] = useState(0);
-    const [currentLanguage, setCurrentLanguage] = useState(i18n.language);
-    const [showDestinationMessage, setShowDestinationMessage] = useState(false); 
-    const spriteImage = require('../../assets/vehicles.png');
-    const mapRef = useRef(null);
-
-    const { t } = useTranslation();
+    // Definir estados
+    const [coords, setCoords] = useState([]); // Estado para armazenar as coordenadas do trajeto
+    const [bussola, setBussola] = useState(0); // Estado para armazenar a direção da bússola
+    const [routeData, setRouteData] = useState([]); // Estado para armazenar os dados da rota
+    const [isPlaying, setIsPlaying] = useState(false); // Estado para controlar se o movimento está ocorrendo
+    const [mapType, setMapType] = useState('standard'); // Estado para controlar o tipo de mapa
+    const [speedCar, setSpeedCar] = useState(0); // Estado para controlar a velocidade do carro
+    const [spriteSpeed, setSpriteSpeed] = useState(10); // Estado para controlar a velocidade do sprite do carro
+    const [selectedCourseIndex, setSelectedCourseIndex] = useState(0); // Estado para armazenar qual trajeto o usuário quer
+    const [currentPositionIndex, setCurrentPositionIndex] = useState(0); // Estado para controlar o índice da posição atual no trajeto
+    const [currentLanguage, setCurrentLanguage] = useState(i18n.language); // Estado para armazenar o idioma atual
+    const [showDestinationMessage, setShowDestinationMessage] = useState(false); // Estado para controlar a exibição da mensagem de destino
+    const spriteImage = require('../../../assets/vehicles.png'); // Imagem do sprite do veículo
+    const mapRef = useRef(null); // Referência para o mapa
+    
+    const { t } = useTranslation();// Hook para tradução
     let rosadosventos = -380
 
+    // Função para lidar com a conclusão da rota
     const handleRouteReady = (result) => {
         setRouteData(result); // Armazenar os dados da rota no estado
     };
-
+    // Função para selecionar um curso
     const handleCourseSelection = (index) => {
         setSelectedCourseIndex(index); // Atualiza o estado com o índice do curso selecionado
     };
-
+    // Função para alternar o tipo de mapa
     const toggleMapType = () => {
         setMapType(mapType === 'standard' ? 'satellite' : 'standard');
     };
-
+    // Função para iniciar o movimento do carro
     const startMovement = async () => {
         setShowDestinationMessage(false);
         if (selectedCourseIndex !== null) {
@@ -73,7 +76,7 @@ const Mapa = () => {
             setRouteData(result);
         }
     };
-
+    // Função para mudar o idioma
     const changeLanguage = () => {
         let newLanguage = '';
         switch (currentLanguage) {
@@ -93,8 +96,10 @@ const Mapa = () => {
         i18n.changeLanguage(newLanguage);
         setCurrentLanguage(newLanguage);
     };
-
+    // Função para alterar o frame do carro
     function watchPosition(direction) {
+        // Lógica para determinar o ponto cardeal com base na direção
+        // e atualizar a variável bússola
         let point = '';
         if (direction >= -15 && direction < 15) {
             rosadosventos = -380;
@@ -121,19 +126,18 @@ const Mapa = () => {
             rosadosventos = -380;
             point = 'norte';
         }
-        setbussola(rosadosventos)
-        console.log("direction: " + direction + point + ": " + rosadosventos);
-
+        setBussola(rosadosventos)
     }
-
+    // Efeito para movimentar o marcador no mapa
     useEffect(() => {
         let timer;
         let newAnimetSpeed
         if (routeData && routeData.coordinates && routeData.coordinates.length > 0 && isPlaying) {
             let index = 0;
             const moveMarker = () => {
-                let realTimeSpeedCar = 0; // Inicialize com 0
-                let direction = 0; // Inicialize a direção com 0
+                // Lógica para mover o marcador com base na velocidade e direção
+                let realTimeSpeedCar = 0;
+                let direction = 0;
                 if (speedCar[index] && speedCar[index].speed !== undefined && speedCar[index].speed !== null && speedCar[index].speed !== 0) {
                     realTimeSpeedCar = speedCar[index].speed;
                     direction = speedCar[index].direction;
@@ -160,12 +164,12 @@ const Mapa = () => {
                 if (index < routeData.coordinates.length) {
                     setCurrentPositionIndex(index);
                 } else {
-                    // Se chegarmos ao final da rota, limpe o timer
+                    // Se chegarmos ao final da rota, limpe o timer exibe a menssagem
                     clearInterval(timer);
                     setShowDestinationMessage(true);
                 }
 
-   
+
             };
 
             // Chama moveMarker imediatamente para iniciar o movimento
@@ -173,16 +177,16 @@ const Mapa = () => {
 
 
 
-            timer = setInterval(moveMarker, newAnimetSpeed); // Configura a  velociadade do carro com o valor que esta atribuido a  newAnimetSpeed
+            timer = setInterval(moveMarker, newAnimetSpeed);  // Configura a velocidade do carro
         }
 
 
-        
+
 
         return () => clearInterval(timer);
     }, [routeData, isPlaying, speedCar]);
 
-
+    // Efeito para atualizar a posição do mapa
     useEffect(() => {
         if (routeData && routeData.coordinates && routeData.coordinates.length > 0) {
             if (currentPositionIndex < routeData.coordinates.length - 1 && mapRef.current && routeData && routeData.coordinates && routeData.coordinates.length > 0) {
@@ -200,6 +204,7 @@ const Mapa = () => {
 
     return (
         <View style={styles.container}>
+            {/* Mapa */}
             <MapView
                 ref={mapRef}
                 style={styles.map}
@@ -216,6 +221,7 @@ const Mapa = () => {
                 }}
                 mapType={mapType}
             >
+                {/* Marcadores */}
                 {coords.map((coord, index) => (
                     <Marker
                         key={index}
@@ -223,6 +229,7 @@ const Mapa = () => {
                         title={`Ponto ${index + 1}`}
                     />
                 ))}
+                {/* Direções da rota */}
                 {coords.length >= 2 && (
                     <MapViewDirections
                         origin={coords[0]}
@@ -230,10 +237,11 @@ const Mapa = () => {
                         waypoints={coords.slice(1, -1)}
                         strokeWidth={3}
                         strokeColor="red"
-                        apikey={"google key"}
+                        apikey={"AIzaSyCgZA5_i94ghWjvjqlzAxNerRaRiPpR2yc"}
                         onReady={handleRouteReady}
                     />
                 )}
+                {/* Marcador animado */}
                 {routeData && routeData.coordinates && routeData.coordinates.length > 0 && (
                     <Marker.Animated
                         coordinate={routeData.coordinates[currentPositionIndex]}
@@ -245,19 +253,24 @@ const Mapa = () => {
                     </Marker.Animated>
                 )}
             </MapView>
+            {/* Mensagem de destino */}
             {showDestinationMessage && (
-                    <View style={styles.destinationMessageContainer}>
-                        <Text style={styles.destinationMessage}>{t('common.destinationReached')}</Text>
-                    </View>
-                )}
+                <View style={styles.destinationMessageContainer}>
+                    <Text style={styles.destinationMessage}>{t('common.destinationReached')}</Text>
+                </View>
+            )}
+            {/* Controles */}
             <View style={styles.controlsContainer}>
+                {/* Botão de reprodução */}
                 <TouchableOpacity style={styles.button} onPress={startMovement}>
                     <Icon name="play" size={30} color="#fff" />
                 </TouchableOpacity>
+                {/* Velocidade */}
                 <View style={styles.speedControls}>
                     <Text style={styles.speedValue}>{spriteSpeed}</Text>
                     <Text style={styles.speedUnit}>{t('common.speedUnit')}</Text>
                 </View>
+                {/* Alternar tipo de mapa */}
                 <TouchableOpacity style={styles.toggleButton} onPress={toggleMapType}>
                     <Text style={styles.toggleButtonText}>
                         {t(`common.mapTypeToggle.${mapType}`)}
@@ -266,10 +279,8 @@ const Mapa = () => {
                 <TouchableOpacity style={styles.languageButton} onPress={changeLanguage}>
                     <Text style={styles.languageButtonText}>{t('common.changeLanguage')}</Text>
                 </TouchableOpacity>
-
-                
             </View>
-
+            {/* Mudar idioma */}
             <View style={styles.courseSelection}>
                 {[0, 1, 2, 3, 4].map((index) => (
                     <TouchableOpacity
@@ -286,116 +297,116 @@ const Mapa = () => {
     );
 };
 
-const styles = StyleSheet.create({
-    container: {
-        ...StyleSheet.absoluteFillObject,
-        justifyContent: 'space-between',
-        flexDirection: 'column',
-        paddingTop: 20,
-    },
-    map: {
-        ...StyleSheet.absoluteFillObject,
-        flex: 1,
-    },
-    sprite: {
-        width: 60,
-        height: 60,
-    },
-    controlsContainer: {
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'flex-start',
-        marginLeft: 20,
-        marginTop: 300,
-        justifyContent: 'center'
-    },
-    button: {
-        backgroundColor: '#007bff',
-        padding: 15,
-        borderRadius: 20,
-        marginBottom: 10,
-    },
-    buttonText: {
-        color: 'white',
-        fontSize: 18,
-        fontWeight: 'bold',
-    },
-    speedControls: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#ccc',
-        borderRadius: 10,
-        padding: 10,
-    },
-    speedValue: {
-        fontSize: 20,
-        fontWeight: 'bold',
-    },
-    speedUnit: {
-        fontSize: 16,
-        color: 'gray',
-        marginLeft: 5,
-    },
-    courseSelection: {
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'flex-end',
-        marginRight: 20,
-    },
-    courseButton: {
-        backgroundColor: '#f0f0f0',
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 5,
-        marginBottom: 10,
-    },
-    selectedCourseButton: {
-        backgroundColor: '#007bff',
-    },
-    courseButtonText: {
-        color: 'black',
-        fontSize: 16,
-    },
-    toggleButton: {
+// const styles = StyleSheet.create({
+//     container: {
+//         ...StyleSheet.absoluteFillObject,
+//         justifyContent: 'space-between',
+//         flexDirection: 'column',
+//         paddingTop: 20,
+//     },
+//     map: {
+//         ...StyleSheet.absoluteFillObject,
+//         flex: 1,
+//     },
+//     sprite: {
+//         width: 60,
+//         height: 60,
+//     },
+//     controlsContainer: {
+//         flexDirection: 'column',
+//         justifyContent: 'center',
+//         alignItems: 'flex-start',
+//         marginLeft: 20,
+//         marginTop: 300,
+//         justifyContent: 'center'
+//     },
+//     button: {
+//         backgroundColor: '#007bff',
+//         padding: 15,
+//         borderRadius: 20,
+//         marginBottom: 10,
+//     },
+//     buttonText: {
+//         color: 'white',
+//         fontSize: 18,
+//         fontWeight: 'bold',
+//     },
+//     speedControls: {
+//         flexDirection: 'row',
+//         alignItems: 'center',
+//         justifyContent: 'center',
+//         backgroundColor: '#ccc',
+//         borderRadius: 10,
+//         padding: 10,
+//     },
+//     speedValue: {
+//         fontSize: 20,
+//         fontWeight: 'bold',
+//     },
+//     speedUnit: {
+//         fontSize: 16,
+//         color: 'gray',
+//         marginLeft: 5,
+//     },
+//     courseSelection: {
+//         flexDirection: 'column',
+//         justifyContent: 'center',
+//         alignItems: 'flex-end',
+//         marginRight: 20,
+//     },
+//     courseButton: {
+//         backgroundColor: '#f0f0f0',
+//         paddingVertical: 10,
+//         paddingHorizontal: 20,
+//         borderRadius: 5,
+//         marginBottom: 10,
+//     },
+//     selectedCourseButton: {
+//         backgroundColor: '#007bff',
+//     },
+//     courseButtonText: {
+//         color: 'black',
+//         fontSize: 16,
+//     },
+//     toggleButton: {
 
-        marginTop: 10,
-        backgroundColor: '#007bff',
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 10,
-    },
-    languageButton: {
-        backgroundColor: '#007bff',
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 10,
-        marginTop: 10,
-    },
-    languageButtonText: {
-        color: 'white',
-        fontSize: 16,
-    },
-    destinationMessageContainer: {
-        position: 'absolute',
-        top: 50,
-        left: 10,
-        right: 10,
-        backgroundColor: '#fff',
-        padding: 10,
-        borderRadius: 10,
-        justifyContent: 'center',
-        alignItems: 'center',
-        height:40,
-        marginEnd:10,
-        width:"auto"
-    },
-    destinationMessage: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#333',
-    },
-});
+//         marginTop: 10,
+//         backgroundColor: '#007bff',
+//         paddingVertical: 10,
+//         paddingHorizontal: 20,
+//         borderRadius: 10,
+//     },
+//     languageButton: {
+//         backgroundColor: '#007bff',
+//         paddingVertical: 10,
+//         paddingHorizontal: 20,
+//         borderRadius: 10,
+//         marginTop: 10,
+//     },
+//     languageButtonText: {
+//         color: 'white',
+//         fontSize: 16,
+//     },
+//     destinationMessageContainer: {
+//         position: 'absolute',
+//         top: 50,
+//         left: 10,
+//         right: 10,
+//         backgroundColor: '#fff',
+//         padding: 10,
+//         borderRadius: 10,
+//         justifyContent: 'center',
+//         alignItems: 'center',
+//         height: 40,
+//         marginEnd: 10,
+//         width: "auto"
+//     },
+//     destinationMessage: {
+//         fontSize: 16,
+//         fontWeight: 'bold',
+//         color: '#333',
+//     },
+// });
 
 
 export default Mapa;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { SafeAreaView } from 'react-native';
-import Mapa from './src/components/Mapa.js';
+import Mapa from './src/components/Mapa/Mapa.js';
 import { I18nextProvider } from 'react-i18next';
 import i18n from './src/languages/ii8n.js';
 
