@@ -5,7 +5,7 @@ Este repositório contém dois projetos relacionados ao uso do React Native Maps
 O projeto "Animação" apresenta uma animação de um carro percorrendo as ruas. Para implementar essa animação, utilizei a ferramenta de GPS do Android Studio para fazer o carro se movimentar em uma rota pré-definida junto com expo-location.
 Este projeto foi inicialmente criado como um exercício de aprendizado para explorar o uso do React Native Maps e outras bibliotecas relacionadas.
 
-### **O projeto principal "Coordenadas" **
+## **O projeto principal "Coordenadas" **
 
 Esté uma aplicação móvel desenvolvida em React Native, que oferece recursos de visualização e interação com mapas. 
 Com ele, os usuários podem visualizar rotas predefinidas, acompanhar um marcador animado movendo-se ao longo da rota e alternar entre diferentes tipos de mapas. 
@@ -53,7 +53,7 @@ Isso abrirá o Expo Developer Tools. Você pode então abrir o aplicativo em um 
 │ └── mapaStyles.js
 └── frontend_data_gps.json
 
-#### DESAFIO
+## ** DESAFIO **
 
 Animação da Imagem no Sprite: O mapa inclui uma funcionalidade que anima uma imagem de veículo (sprite) de acordo com a direção do carro ao longo da rota:
 
