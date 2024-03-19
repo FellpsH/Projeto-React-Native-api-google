@@ -141,5 +141,5 @@ const handleCourseSelection = (index) => {
 ## Complemento: 
 Na pasta "animação", a animação é aprimorada com o uso da biblioteca Expo Location, que captura dados de GPS do telefone para proporcionar uma animação mais precisa. Nesse contexto, os dados obtidos diretamente do GPS do dispositivo garantem uma animação mais fiel à direção real do veículo. Recomenda-se acessar essa pasta para visualizar como a animação foi implementada e como ficou o resultado final.Eu não usei o expo-location no projeto, pois o objetivo era usar os os dados de frontend_data_gps.json.
 
-## Link para um video de mostração do projeto Coordenadas no YouTube: https://youtu.be/8ghdyjc-drE
-## Link para um video de mostração do projeto Animação no YouTube: https://youtu.be/_TKP42CAvUQ
+## Link para um video de demostração do projeto Coordenadas no YouTube: https://youtu.be/8ghdyjc-drE
+## Link para um video de demostração do projeto Animação no YouTube: https://youtu.be/_TKP42CAvUQ
