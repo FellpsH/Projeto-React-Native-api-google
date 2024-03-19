@@ -230,7 +230,7 @@ const Mapa = () => {
                         waypoints={coords.slice(1, -1)}
                         strokeWidth={3}
                         strokeColor="red"
-                        apikey={"AIzaSyCgZA5_i94ghWjvjqlzAxNerRaRiPpR2yc"}
+                        apikey={"google key"}
                         onReady={handleRouteReady}
                     />
                 )}
