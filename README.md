@@ -108,11 +108,8 @@ Tarefas Bônus:
 
 Velocidade do Veículo: Utiliza a velocidade real do veículo para determinar a velocidade da animação ao longo do trajeto.
 
-	Obtenção dos Dados de Velocidade: Os dados de velocidade do veículo são extraídos do arquivo frontend_data_gps.json, que contém informações sobre a velocidade em 	diferentes momentos ao longo do trajeto.
-
-	Para determinar a velocidade da animação, o código verifica o valor de speed no arquivo frontend_data_gps.json. Se esse valor for maior que zero, ele é usado. No 	entanto, caso o arquivo retorne um valor zero, o que pode acontecer, o carro ficará parado. Portanto,   nesse caso, um valor de velocidade aleatório é gerado para 	simular o movimento do veículo.
-
-	juste da Velocidade da Animação: A velocidade da animação é ajustada com base na velocidade real do veículo. Quanto maior a velocidade do veículo, mais rápida será a 	animação, e vice-versa. Isso é feito modificando o intervalo entre os frames da animação para refletir a velocidade do veículo.
+Obtenção dos Dados de Velocidade: Os dados de velocidade do veículo são extraídos do arquivo frontend_data_gps.json, que contém informações sobre a velocidade em diferentes momentos ao longo do trajeto.
+Para determinar a velocidade da animação, o código verifica o valor de speed no arquivo frontend_data_gps.json. Se esse valor for maior que zero, ele é usado. No entanto, caso o arquivo retorne um valor zero, o que pode acontecer, o carro ficará parado. Portanto,   nesse caso, um valor de velocidade aleatório é gerado para simular o movimento do veículo. juste da Velocidade da Animação: A velocidade da animação é ajustada com base na velocidade real do veículo. Quanto maior a velocidade do veículo, mais rápida será a 	animação, e vice-versa. Isso é feito modificando o intervalo entre os frames da animação para refletir a velocidade do veículo.
 
 
 
