@@ -104,16 +104,16 @@ especificando a posição horizontal do sprite com base na direção do carro (b
 </Marker.Animated>
 ```
 
-Tarefas Bônus:
+##Tarefas Bônus:
 
-Velocidade do Veículo: Utiliza a velocidade real do veículo para determinar a velocidade da animação ao longo do trajeto.
+##Velocidade do Veículo: Utiliza a velocidade real do veículo para determinar a velocidade da animação ao longo do trajeto.
 
-Obtenção dos Dados de Velocidade: Os dados de velocidade do veículo são extraídos do arquivo frontend_data_gps.json, que contém informações sobre a velocidade em diferentes momentos ao longo do trajeto.
+##Obtenção dos Dados de Velocidade: Os dados de velocidade do veículo são extraídos do arquivo frontend_data_gps.json, que contém informações sobre a velocidade em diferentes momentos ao longo do trajeto.
 Para determinar a velocidade da animação, o código verifica o valor de speed no arquivo frontend_data_gps.json. Se esse valor for maior que zero, ele é usado. No entanto, caso o arquivo retorne um valor zero, o que pode acontecer, o carro ficará parado. Portanto,   nesse caso, um valor de velocidade aleatório é gerado para simular o movimento do veículo. juste da Velocidade da Animação: A velocidade da animação é ajustada com base na velocidade real do veículo. Quanto maior a velocidade do veículo, mais rápida será a 	animação, e vice-versa. Isso é feito modificando o intervalo entre os frames da animação para refletir a velocidade do veículo.
 
 
 
-Seleção de Trajeto: O código permite que o usuário escolha qual trajeto deseja visualizar no mapa. Isso é feito por meio da função handleCourseSelection(index), onde index representa o índice do trajeto selecionado. Ao pressionar um dos botões correspondentes aos trajetos disponíveis, essa função é chamada, atualizando o estado selectedCourseIndex com o índice do trajeto escolhido. Em seguida, o trajeto selecionado é renderizado no mapa. Abaixo está um trecho de código exemplificando essa funcionalidade:
+##Seleção de Trajeto: O código permite que o usuário escolha qual trajeto deseja visualizar no mapa. Isso é feito por meio da função handleCourseSelection(index), onde index representa o índice do trajeto selecionado. Ao pressionar um dos botões correspondentes aos trajetos disponíveis, essa função é chamada, atualizando o estado selectedCourseIndex com o índice do trajeto escolhido. Em seguida, o trajeto selecionado é renderizado no mapa. Abaixo está um trecho de código exemplificando essa funcionalidade:
 
 ```javascript
 // Função para selecionar um curso
@@ -134,6 +134,9 @@ const handleCourseSelection = (index) => {
 </View>
 ```
 
-Observação: É importante notar que a animação do carro pode não ser perfeita em todos os momentos, pois a direção do carro é obtida a partir dos dados fornecidos pelo arquivo frontend_data_gps.json. Em algumas situações, esse arquivo pode fornecer um valor de direção zerado, fazendo com que o carro permaneça apontado para o norte. Isso pode resultar em uma animação menos precisa da direção do veículo ao longo do trajeto.
+##Observação: É importante notar que a animação do carro pode não ser perfeita em todos os momentos, pois a direção do carro é obtida a partir dos dados fornecidos pelo arquivo frontend_data_gps.json. Em algumas situações, esse arquivo pode fornecer um valor de direção zerado, fazendo com que o carro permaneça apontado para o norte. Isso pode resultar em uma animação menos precisa da direção do veículo ao longo do trajeto.
 
-Complemento: Na pasta "animação", a animação é aprimorada com o uso da biblioteca Expo Location, que captura dados de GPS do telefone para proporcionar uma animação mais precisa. Nesse contexto, os dados obtidos diretamente do GPS do dispositivo garantem uma animação mais fiel à direção real do veículo. Recomenda-se acessar essa pasta para visualizar como a animação foi implementada e como ficou o resultado final.Eu não usei o expo-location no projeto, pois o objetivo era usar os os dados de frontend_data_gps.json.
+##Complemento: Na pasta "animação", a animação é aprimorada com o uso da biblioteca Expo Location, que captura dados de GPS do telefone para proporcionar uma animação mais precisa. Nesse contexto, os dados obtidos diretamente do GPS do dispositivo garantem uma animação mais fiel à direção real do veículo. Recomenda-se acessar essa pasta para visualizar como a animação foi implementada e como ficou o resultado final.Eu não usei o expo-location no projeto, pois o objetivo era usar os os dados de frontend_data_gps.json.
+
+##Link para um video de mostração do projeto no YouTube: https://youtu.be/8ghdyjc-drE
+
